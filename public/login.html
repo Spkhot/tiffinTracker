@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TiffinTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #f39c12; /* Vibrant Orange */
+            --primary-hover: #e67e22;
+            --text-dark: #2c3e50; /* Dark Slate Blue */
+            --text-light: #7f8c8d;
+            --bg-light: #fdfaf6; /* Soft, warm off-white */
+            --bg-white: #ffffff;
+            --border-color: #e0e0e0;
+            --error-color: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            max-width: 1000px;
+            min-height: 600px;
+            background: var(--bg-white);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px;
+        }
+
+        .login-image-side {
+            background: url('assets/image.png') no-repeat center center;
+            background-size: contain;
+            background-color: #fff9f0;
+        }
+
+        .login-form-side {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .top-nav-links {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-icon {
+            display: block;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-dark);
+        }
+        .nav-icon:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .logo-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .form-container h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .form-container p {
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
+        }
+
+        /* --- NEW STYLES FOR PASSWORD TOGGLE --- */
+        .password-group {
+            position: relative;
+        }
+        .password-group input {
+            padding-right: 45px; 
+        }
+        .toggle-password {
+            position: absolute;
+            top: 68%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        .toggle-password svg {
+            fill: currentColor;
+        }
+        /* --- END OF NEW STYLES --- */
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+        }
+
+        .message {
+            margin-top: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
+        .message.error {
+            color: var(--error-color);
+        }
+        .signup-link {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        .signup-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            .login-wrapper {
+                grid-template-columns: 1fr;
+                min-height: auto;
+                max-width: 500px;
+            }
+            .login-image-side {
+                display: none;
+            }
+            .login-form-side {
+                padding: 40px;
+            }
+        }
+        @media (max-width: 500px) {
+            body {
+                align-items: flex-start;
+                background: var(--bg-white);
+            }
+            .login-wrapper {
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+                min-height: 100vh;
+            }
+            .login-form-side {
+                padding: 30px;
+            }
+            .form-container h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+
+        <div class="login-image-side"></div>
+
+        <div class="login-form-side">
+            <div class="top-nav-links">
+                <a href="#" id="back-btn" class="nav-icon" title="Go Back"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z"></path></svg></a>
+                <a href="/" class="nav-icon" title="Go Home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 21H5C4.44772 21 4 20.5523 4 20V11L1 11L11.3273 1.6115C11.7086 1.2647 12.2914 1.2647 12.6727 1.6115L23 11L20 11V20C20 20.5523 19.5523 21 19 21ZM6 19H18V9.15745L12 3.7029L6 9.15745V19Z"></path></svg></a>
+            </div>
+
+            <div class="form-container">
+                 <a href="/" class="logo-container">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.12,4H7.88A2.88,2.88,0,0,0,5,6.88V19.12A2.88,2.88,0,0,0,7.88,22H16.12A2.88,2.88,0,0,0,19,19.12V6.88A2.88,2.88,0,0,0,16.12,4ZM8,2H16a1,1,0,0,1,0,2H8A1,1,0,0,1,8,2Z" fill="#2c3e50"/><path d="M10.75 14.59L8.41 12.25a.75.75 0 0 1 1.06-1.06l1.28 1.28 3.22-3.22a.75.75 0 0 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0z" fill="#f39c12"/></svg>
+                    <span class="logo-name">TiffinTracker</span>
+                </a>
+                <h1>Welcome Back!</h1>
+                <p>Please enter your details to log in.</p>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group password-group"> <!-- MODIFIED HTML -->
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                        <span class="toggle-password" id="toggle-password">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><path d="M12 3.25C6.5 3.25 2 8 2 12s4.5 8.75 10 8.75 10-3.75 10-8.75S17.5 3.25 12 3.25zM12 18C8.13 18 5 15.31 5 12s3.13-6 7-6 7 2.69 7 6-3.13 6-7 6zm0-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                        </span>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+
+                <p id="message" class="message"></p>
+                <p class="signup-link">Don't have an account? <a href="/signup.html">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('back-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.history.back();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- NEW SCRIPT FOR PASSWORD TOGGLE ---
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('toggle-password');
+
+            if (togglePassword) { // Add a check to ensure the element exists
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    if (type === 'password') {
+                        this.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><path d="M12 3.25C6.5 3.25 2 8 2 12s4.5 8.75 10 8.75 10-3.75 10-8.75S17.5 3.25 12 3.25zM12 18C8.13 18 5 15.31 5 12s3.13-6 7-6 7 2.69 7 6-3.13 6-7 6zm0-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>`;
+                    } else {
+                        this.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><path d="M12 5.5c4.64 0 8.5 3.05 10 7.5-1.5 4.45-5.36 7.5-10 7.5s-8.5-3.05-10-7.5c1.5-4.45 5.36-7.5 10-7.5zm0 11c1.93 0 3.5-1.57 3.5-3.5S13.93 9.5 12 9.5 8.5 11.07 8.5 13s1.57 3.5 3.5 3.5zm-5.6-3.5c0-1.2.53-2.28 1.38-3-1.09.43-2.02 1.14-2.73 2.11l.01.01c-.13.2-.24.41-.35.63.1.2.2.39.31.58l.01.01c.71.97 1.64 1.68 2.73 2.11-.85-.72-1.38-1.8-1.38-3zM12 15c-.83 0-1.5-.67-1.5-1.5S11.17 12 12 12s1.5.67 1.5 1.5S12.83 15 12 15zm4.22-3.89c.71.97 1.64 1.68 2.73 2.11-.85-.72-1.38-1.8-1.38-3s.53-2.28 1.38-3c-1.09.43-2.02 1.14-2.73 2.11l.01.01c-.01 0-.01 0 0 0z"/></svg>`;
+                    }
+                });
+            }
+            // --- END OF NEW SCRIPT ---
+
+            // --- YOUR ORIGINAL SCRIPT ---
+            if (localStorage.getItem('token')) {
+                window.location.href = '/dashboard.html';
+            }
+        });
+
+        const loginForm = document.getElementById('login-form');
+        const messageEl = document.getElementById('message');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            messageEl.textContent = '';
+            messageEl.className = 'message';
+
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Something went wrong');
+                }
+
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userName', data.name);
+                
+                window.location.href = '/dashboard.html';
+
+            } catch (err) {
+                messageEl.textContent = err.message;
+                messageEl.className = 'message error';
+            }
+        });
+    </script>
+
+</body>
+</html>

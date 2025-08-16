@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TiffinTracker - Smart Tiffin Counting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #f39c12; /* Vibrant Orange */
+            --primary-hover: #e67e22; /* Darker Orange */
+            --secondary-color: #e67e22; /* A complementary orange */
+            --text-dark: #2c3e50; /* Dark Slate Blue */
+            --text-light: #7f8c8d;
+            --bg-light: #fdfaf6; /* Soft, warm off-white */
+            --bg-white: #ffffff;
+            --border-color: #ecf0f1;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+        }
+
+        /* --- General Styles & Resets --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-white);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+        
+        section {
+            padding: 100px 0;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        h2 span {
+            color: var(--primary-color);
+        }
+
+        p {
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+        }
+
+        /* --- Animations --- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            margin-left: 35px;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        .nav-links a:not(.btn)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:not(.btn):hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none; /* Hidden on desktop */
+            cursor: pointer;
+            z-index: 1001;
+        }
+        .menu-toggle .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-dark);
+            margin: 5px 0;
+            transition: 0.4s;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 60px 0;
+            min-height: 80vh;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 550px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .hero-image {
+            flex: 1;
+            text-align: right;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            width: 500px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* --- Features Section --- */
+        #features {
+            background-color: var(--bg-light);
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: var(--bg-white);
+            padding: 40px 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        .feature-card h3 {
+            font-size: 1.5rem;
+        }
+
+        /* --- How It Works Section --- */
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            position: relative;
+        }
+        .step {
+            flex: 1;
+            background: var(--bg-white);
+            padding: 30px;
+            border-radius: 10px;
+            border-top: 4px solid var(--primary-color);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .step h3 {
+            font-size: 1.5rem;
+        }
+
+        /* --- Testimonial Section --- */
+        #testimonials {
+            background-color: var(--bg-light);
+        }
+        .testimonial-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--bg-white);
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .testimonial-quote {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* --- CTA Section --- */
+        #cta {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            border-radius: 20px;
+            margin: 0 auto;
+            max-width: 1100px;
+        }
+        #cta h2 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        #cta p {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        #cta .btn {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: none;
+        }
+        #cta .btn:hover {
+            background: var(--border-color);
+        }
+        
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            background-color: var(--text-dark);
+            color: var(--bg-light);
+            margin-top: 80px;
+        }
+
+        /* --- FULLY RESPONSIVE STYLES --- */
+        @media (max-width: 992px) {
+            section { padding: 80px 0; }
+            h2 { font-size: 2.5rem; }
+            .hero {
+                flex-direction: column-reverse; /* Image on top for mobile */
+                text-align: center;
+            }
+            .hero-content {
+                max-width: 100%;
+                margin-top: 40px;
+            }
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Mobile Nav Styles */
+            .menu-toggle {
+                display: block; /* Show hamburger menu */
+            }
+            .menu-toggle.active .bar:nth-child(1) {
+                transform: rotate(-45deg) translate(-5px, 6px);
+            }
+            .menu-toggle.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+            .menu-toggle.active .bar:nth-child(3) {
+                transform: rotate(45deg) translate(-5px, -6px);
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+                background: var(--bg-white);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.5s ease-in-out;
+            }
+            .nav-links.active {
+                max-height: 500px; /* Or a larger value */
+                padding: 20px 0;
+            }
+            .nav-links a {
+                margin: 15px 0;
+                font-size: 1.1rem;
+            }
+
+            /* Other Section Adjustments */
+            .steps-container {
+                flex-direction: column;
+            }
+            .hero-image img { width: 90%; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 0 15px; }
+            h2 { font-size: 2rem; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .testimonial-card { padding: 30px; }
+        }
+    </style>
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+
+<header class="navbar container">
+    <a href="#" class="logo-container">
+        <!-- SVG Logo with new orange color -->
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.12,4H7.88A2.88,2.88,0,0,0,5,6.88V19.12A2.88,2.88,0,0,0,7.88,22H16.12A2.88,2.88,0,0,0,19,19.12V6.88A2.88,2.88,0,0,0,16.12,4ZM8,2H16a1,1,0,0,1,0,2H8A1,1,0,0,1,8,2Z" fill="#2c3e50"/>
+            <path d="M10.75 14.59L8.41 12.25a.75.75 0 0 1 1.06-1.06l1.28 1.28 3.22-3.22a.75.75 0 0 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0z" fill="#f39c12"/>
+        </svg>
+        <span class="logo-name">TiffinTracker</span>
+    </a>
+    <nav>
+        <div class="menu-toggle" id="menu-toggle">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="/login.html">Login</a>
+            <a href="/signup.html" class="btn">Sign Up Free</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="hero container">
+        <div class="hero-content fade-in">
+            <h1>Never Overpay for Your Tiffin Again.</h1>
+            <p>Effortlessly track your daily meals with a single tap. Get accurate monthly counts and say goodbye to billing disputes forever.</p>
+            <a href="/signup.html" class="btn" id="hero-btn">Get Started for Free</a>
+        </div>
+        <div class="hero-image fade-in" style="transition-delay: 0.2s;">
+<lottie-player 
+                    src="assets/Food prep.json" 
+                    background="transparent" 
+                    speed="1" 
+                    loop 
+                    autoplay>
+                </lottie-player>        </div>
+    </section>
+
+    <section id="features">
+        <div class="container">
+            <h2>Why <span>TiffinTracker</span>?</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">💰</div>
+                    <h3>Save Money</h3>
+                    <p>Only pay for the meals you've actually had. Our accurate tracking ensures you're never overcharged by your tiffin service.</p>
+                </div>
+                <div class="feature-card fade-in" style="transition-delay: 0.2s;">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Save Time</h3>
+                    <p>No more manual counting or marking calendars. A simple "Yes/No" notification is all it takes to log your meal in seconds.</p>
+                </div>
+                <div class="feature-card fade-in" style="transition-delay: 0.4s;">
+                    <div class="feature-icon">🧘‍♂️</div>
+                    <h3>Stay Organized</h3>
+                    <p>Access a clear, real-time dashboard of your meal history and estimated bill. Total transparency, zero confusion.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works">
+        <div class="container">
+            <h2>Simple as <span>1, 2, 3</span></h2>
+            <div class="steps-container">
+                <div class="step fade-in">
+                    <div class="step-number">1</div>
+                    <h3>Set Your Schedule</h3>
+                    <p>Tell us your meal times and price. We'll set up your personalized tracking calendar.</p>
+                </div>
+                <div class="step fade-in" style="transition-delay: 0.2s;">
+                    <div class="step-number">2</div>
+                    <h3>Get Notified</h3>
+                    <p>Receive a simple notification on your phone at meal time. Tap 'Yes' or 'No' to log your meal instantly.</p>
+                </div>
+                <div class="step fade-in" style="transition-delay: 0.4s;">
+                    <div class="step-number">3</div>
+                    <h3>Track Your Bill</h3>
+                    <p>Watch your monthly count and estimated bill update in real-time on your personal dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials">
+        <div class="container">
+            <h2 class="fade-in">Trusted by <span>Students & Professionals</span></h2>
+            <div class="testimonial-card fade-in" style="transition-delay: 0.2s;">
+                <p class="testimonial-quote">"TiffinTracker is a lifesaver! I used to argue with my tiffin provider every month over the bill. Now, I just show them my dashboard. No more disputes."</p>
+                <p class="testimonial-author">- Aman S., Software Engineer</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="cta" class="fade-in">
+        <div class="container">
+            <h2>Ready to Take Control of Your Tiffin Bill?</h2>
+            <p>Join hundreds of others who are saving time and money. Sign up in 60 seconds. It's completely free!</p>
+            <a href="/signup.html" class="btn">Start Tracking Now</a>
+        </div>
+    </section>
+</main>
+
+<footer class="fade-in">
+    <p>&copy; 2024 TiffinTracker. All Rights Reserved.</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- NEW SCRIPT FOR HAMBURGER MENU ---
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+
+        // --- YOUR ORIGINAL SCRIPT FOR LOGIN STATE (UNCHANGED) ---
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        
+        if (token && userName) {
+            // Adjusts the content of the nav-links container
+            navLinks.innerHTML = `
+                <a href="/dashboard.html">Welcome, ${userName}</a>
+                <a href="#" id="logout-btn" class="btn">Logout</a>
+            `;
+
+            // If user is logged in, find the logout button within the new navlinks content and add listener
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userName');
+                    window.location.href = '/';
+                });
+            }
+
+            // Still need to update the hero button separately
+            document.getElementById('hero-btn').innerText = 'Go to Dashboard';
+            document.getElementById('hero-btn').href = '/dashboard.html';
+        }
+    });
+
+    // --- SCRIPT FOR SCROLL ANIMATIONS ---
+    const animatedElements = document.querySelectorAll('.fade-in');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    animatedElements.forEach(el => {
+        observer.observe(el);
+    });
+</script>
+</body>
+</html>

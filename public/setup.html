@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Your Tiffin - TiffinTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #f39c12; /* Vibrant Orange */
+            --primary-hover: #e67e22;
+            --text-dark: #2c3e50; /* Dark Slate Blue */
+            --text-light: #7f8c8d;
+            --bg-light: #fdfaf6; /* Soft, warm off-white */
+            --bg-white: #ffffff;
+            --border-color: #e0e0e0;
+            --error-color: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 20px;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .setup-container {
+            background: var(--bg-white);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .logo-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .setup-container h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .setup-container p {
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            opacity: 0; /* For animation */
+            animation: slideInUp 0.5s ease-out forwards;
+        }
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.3s; }
+        .form-group:nth-child(3) { animation-delay: 0.4s; }
+        #time-inputs-container { animation-delay: 0.5s; } /* This is not a direct child, so target it specifically */
+        .btn { animation-delay: 0.6s; }
+
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: #fcfcfc;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            margin-top: 10px;
+            opacity: 0; /* For animation */
+            animation: slideInUp 0.5s ease-out forwards;
+        }
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+        }
+
+        #time-inputs-container .form-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        #time-inputs-container label {
+            flex-basis: 120px; /* Give labels consistent width */
+            flex-shrink: 0;
+        }
+        #time-inputs-container input {
+            flex-grow: 1;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-weight: 500;
+            min-height: 20px;
+        }
+        .message.error {
+            color: var(--error-color);
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                align-items: flex-start;
+                padding-top: 80px;
+            }
+            .setup-container {
+                padding: 30px;
+            }
+            .setup-container h1 {
+                font-size: 1.8rem;
+            }
+            .logout-btn {
+                top: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="#" id="logout-btn" class="logout-btn">Logout</a>
+
+    <div class="setup-container">
+        <div class="logo-container">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.12,4H7.88A2.88,2.88,0,0,0,5,6.88V19.12A2.88,2.88,0,0,0,7.88,22H16.12A2.88,2.88,0,0,0,19,19.12V6.88A2.88,2.88,0,0,0,16.12,4ZM8,2H16a1,1,0,0,1,0,2H8A1,1,0,0,1,8,2Z" fill="#2c3e50"/><path d="M10.75 14.59L8.41 12.25a.75.75 0 0 1 1.06-1.06l1.28 1.28 3.22-3.22a.75.75 0 0 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0z" fill="#f39c12"/></svg>
+            <span class="logo-name">TiffinTracker</span>
+        </div>
+        <h1>One Last Step!</h1>
+        <p>Set up your tiffin details to start tracking.</p>
+        <form id="setup-form">
+            <div class="form-group">
+                <label for="messName">Tiffin Service Name</label>
+                <input type="text" id="messName" required placeholder="e.g., Aunty's Kitchen">
+            </div>
+            <div class="form-group">
+                <label for="pricePerTiffin">Price per Tiffin</label>
+                <input type="number" id="pricePerTiffin" required placeholder="e.g., 70">
+            </div>
+            <div class="form-group">
+                <label for="timesPerDay">How many tiffins per day?</label>
+                <select id="timesPerDay">
+                    <option value="1">One (e.g., Lunch only)</option>
+                    <option value="2">Two (e.g., Lunch & Dinner)</option>
+                    <option value="3">Three (e.g., Breakfast, Lunch & Dinner)</option>
+                </select>
+            </div>
+            <div id="time-inputs-container">
+                <!-- Time inputs will be generated here by JS -->
+            </div>
+            <button type="submit" class="btn">Save & Go to Dashboard</button>
+            <p id="message" class="message"></p>
+        </form>
+    </div>
+
+    <!-- YOUR ORIGINAL SCRIPT - UNCHANGED, WITH NEW LOGOUT LOGIC ADDED -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- NEW LOGIC FOR LOGOUT BUTTON ---
+            const logoutBtn = document.getElementById('logout-btn');
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = '/login.html';
+            });
+
+            // --- YOUR ORIGINAL SCRIPT STARTS HERE ---
+            const timesPerDaySelect = document.getElementById('timesPerDay');
+            const timeInputsContainer = document.getElementById('time-inputs-container');
+            const setupForm = document.getElementById('setup-form');
+            const messageEl = document.getElementById('message');
+
+            const timeLabels = ['Breakfast Time', 'Lunch Time', 'Dinner Time'];
+
+            function renderTimeInputs() {
+                const count = parseInt(timesPerDaySelect.value);
+                timeInputsContainer.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    // Added form-group class for animation consistency
+                    timeInputsContainer.innerHTML += `
+                        <div class="form-group">
+                            <label for="time${i}">${timeLabels[i] || `Meal Time ${i+1}`}</label>
+                            <input type="time" id="time${i}" required>
+                        </div>
+                    `;
+                }
+            }
+
+            timesPerDaySelect.addEventListener('change', renderTimeInputs);
+            
+            // Initial render
+            renderTimeInputs();
+
+            setupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messageEl.textContent = '';
+                
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('You are not logged in. Please log in to continue.');
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const messName = document.getElementById('messName').value;
+                const pricePerTiffin = document.getElementById('pricePerTiffin').value;
+                const timesPerDay = parseInt(timesPerDaySelect.value);
+                const notificationTimes = [];
+                for (let i = 0; i < timesPerDay; i++) {
+                    notificationTimes.push(document.getElementById(`time${i}`).value);
+                }
+
+                try {
+                    const res = await fetch('/api/dashboard/settings', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ messName, pricePerTiffin, timesPerDay, notificationTimes })
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Failed to save settings');
+                    
+                    window.location.href = '/dashboard.html';
+                    
+                } catch (err) {
+                    messageEl.textContent = err.message;
+                    messageEl.className = 'message error';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
