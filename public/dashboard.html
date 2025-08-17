@@ -33,11 +33,11 @@
         .menu-toggle { display: block; cursor: pointer; z-index: 1001; }
         .bar { display: block; width: 25px; height: 3px; margin: 5px auto; background-color: var(--dark-color); transition: 0.3s; }
         .nav-menu {
-            position: absolute; top: 70px; left: 0; width: 100%; background: var(--white-color);
-            flex-direction: column; align-items: flex-start; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            position: absolute; top: 70px; left: 20px; width: 100%; background: var(--white-color);
+            flex-direction: column; align-items: flex-start; padding:0; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; display: flex; gap: 20px;
         }
-        .nav-menu.active { max-height: 500px; padding: 20px; }
+        .nav-menu.active { max-height: 500px; }
         .nav-links { display: flex; flex-direction: column; gap: 15px; width: 100%; }
         .nav-links a { color: var(--dark-color); text-decoration: none; font-weight: 500; font-size: 1.1rem; }
         .profile-section { width: 100%; border-top: 1px solid #eee; padding-top: 20px; }
@@ -103,27 +103,9 @@
             .navbar { padding: 0px 30px; }
             .menu-toggle { display: none; }
             .nav-menu {
-    position: absolute;
-    top: 70px;
-    left: 0;
-    width: 100%;
-    background: var(--white-color);
-    flex-direction: column;
-    align-items: flex-start;
-    
-    /* MODIFICATION: Only apply horizontal padding when closed */
-    padding: 0 20px; 
-    
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    max-height: 0;
-    overflow: hidden;
-
-    /* MODIFICATION: Add 'padding' to the transition for a smoother effect */
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
-    
-    display: flex;
-    gap: 20px;
-}
+                position: static; flex-direction: row; align-items: center; gap: 30px; width: auto;
+                max-height: none; overflow: visible; background: transparent; box-shadow: none; padding: 0;
+            }
             .nav-links { flex-direction: row; gap: 30px; width: auto; }
             .nav-links a { font-size: 1rem; }
             .profile-section { position: relative; width: auto; border: none; padding: 0; }
