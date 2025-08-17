@@ -21,7 +21,7 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in-up { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
 
-        /* --- [ NAVBAR - REBUILT FOR PERFECT RESPONSIVENESS ] --- */
+        /* --- [ NAVBAR ] --- */
         .navbar {
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
             background-color: var(--white-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -30,34 +30,24 @@
         .logo-container { display: flex; align-items: center; text-decoration: none; }
         .logo-icon { width: 40px; height: 40px; margin-right: 10px; }
         .logo-name { font-size: 1.5rem; font-weight: 700; color: var(--dark-color); }
-        
-        /* Mobile Menu Styles */
         .menu-toggle { display: block; cursor: pointer; z-index: 1001; }
         .bar { display: block; width: 25px; height: 3px; margin: 5px auto; background-color: var(--dark-color); transition: 0.3s; }
-
         .nav-menu {
-            position: absolute; top: 70px; left: 0; width: 100%;
-            background: var(--white-color);
-            flex-direction: column; align-items: flex-start;
-            padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            max-height: 0; overflow: hidden;
-            transition: max-height 0.4s ease-in-out;
-            display: flex; gap: 20px;
+            position: absolute; top: 70px; left: 0; width: 100%; background: var(--white-color);
+            flex-direction: column; align-items: flex-start; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; display: flex; gap: 20px;
         }
         .nav-menu.active { max-height: 500px; }
-
         .nav-links { display: flex; flex-direction: column; gap: 15px; width: 100%; }
         .nav-links a { color: var(--dark-color); text-decoration: none; font-weight: 500; font-size: 1.1rem; }
-        
         .profile-section { width: 100%; border-top: 1px solid #eee; padding-top: 20px; }
-        .profile-avatar { /* On mobile, this is just a static icon, not a button */
+        .profile-avatar {
             width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-color);
             color: var(--white-color); display: flex; align-items: center; justify-content: center;
             font-weight: 600; user-select: none; margin-bottom: 15px; cursor: default;
         }
-        .profile-dropdown { /* On mobile, this is NOT a dropdown, just a list of buttons */
-            position: static; box-shadow: none; width: 100%;
-            opacity: 1; transform: none; pointer-events: auto;
+        .profile-dropdown {
+            position: static; box-shadow: none; width: 100%; opacity: 1; transform: none; pointer-events: auto;
             display: flex; flex-direction: column; gap: 5px;
         }
         .profile-dropdown a, .profile-dropdown button {
@@ -73,7 +63,18 @@
         .stat-card { padding: 20px; background: var(--light-color); border-radius: var(--border-radius); }
         .stat-card h3 { font-size: 1rem; color: #888; margin-bottom: 10px; }
         .stat-card .value { font-size: 2.5rem; font-weight: 700; color: var(--primary-color); }
-        .calendar-card h2 { text-align: center; font-size: 1.8rem; margin-bottom: 25px; }
+        
+        /* -- NEW: Calendar Header Controls -- */
+        .calendar-header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .calendar-header-controls h2 { margin: 0; font-size: 1.8rem; }
+        .month-nav-btn {
+            background: #eee; border: none; border-radius: 50%; width: 36px; height: 36px;
+            cursor: pointer; font-size: 1.5rem; color: var(--dark-color);
+            display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;
+        }
+        .month-nav-btn:hover { background: #ddd; }
+        .month-nav-btn:disabled { background: #f5f5f5; color: #ccc; cursor: not-allowed; }
+
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .calendar-header { font-weight: 600; text-align: center; padding-bottom: 10px; color: #aaa; }
         .day-cell { background: #F9FAFB; border-radius: 8px; min-height: 90px; position: relative; }
@@ -94,88 +95,31 @@
         /* --- [ MODAL ] --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1001; backdrop-filter: blur(5px); }
         .modal-content { background: white; padding: 30px; border-radius: var(--border-radius); width: 90%; max-width: 450px; animation: fadeInUp 0.4s ease-out; z-index: 1002; }
-        .modal-content h2 { margin-top: 0; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; }
-        .btn-primary { background: var(--primary-color); color: white; } .btn-secondary { background-color: #eee; }
         
         /* --- [ RESPONSIVENESS - TABLET & DESKTOP ] --- */
-
-        /* Tablet View */
-        @media (min-width: 600px) {
-            .main-content .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        /* Desktop View */
+        @media (min-width: 600px) { .main-content .stats-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 768px) {
             .container { padding: 0 30px; }
             .navbar { padding: 15px 30px; }
-            .menu-toggle { display: none; } /* Hide hamburger menu */
-
-            /* Restore desktop nav menu */
+            .menu-toggle { display: none; }
             .nav-menu {
-                position: static;
-                flex-direction: row;
-                align-items: center;
-                gap: 30px;
-                width: auto;
-                max-height: none;
-                overflow: visible;
-                background: transparent;
-                box-shadow: none;
-                padding: 0;
+                position: static; flex-direction: row; align-items: center; gap: 30px; width: auto;
+                max-height: none; overflow: visible; background: transparent; box-shadow: none; padding: 0;
             }
-            .nav-links {
-                flex-direction: row;
-                gap: 30px;
-                width: auto;
-            }
-             .nav-links a { font-size: 1rem; }
-            
-            /* Restore desktop profile dropdown */
-            .profile-section {
-                position: relative;
-                width: auto;
-                border: none;
-                padding: 0;
-            }
-            .profile-avatar {
-                margin-bottom: 0;
-                cursor: pointer;
-            }
+            .nav-links { flex-direction: row; gap: 30px; width: auto; }
+            .nav-links a { font-size: 1rem; }
+            .profile-section { position: relative; width: auto; border: none; padding: 0; }
+            .profile-avatar { margin-bottom: 0; cursor: pointer; }
             .profile-dropdown {
-                position: absolute;
-                top: 55px; right: 0;
-                background: var(--white-color);
-                border-radius: var(--border-radius);
-                box-shadow: var(--shadow);
-                width: 220px;
-                z-index: 100;
-                opacity: 0;
-                transform: translateY(10px);
-                pointer-events: none;
-                transition: opacity 0.2s ease, transform 0.2s ease;
-                display: block; /* Overrides flex */
+                position: absolute; top: 55px; right: 0; background: var(--white-color); border-radius: var(--border-radius);
+                box-shadow: var(--shadow); width: 220px; z-index: 100; opacity: 0; transform: translateY(10px);
+                pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; display: block;
             }
-            .profile-dropdown.active {
-                opacity: 1;
-                transform: translateY(0);
-                pointer-events: auto;
-            }
-            .profile-dropdown a, .profile-dropdown button {
-                padding: 12px 20px;
-            }
-            .profile-dropdown a:hover, .profile-dropdown button:hover {
-                background-color: #f5f5f5;
-            }
+            .profile-dropdown.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+            .profile-dropdown a, .profile-dropdown button { padding: 12px 20px; }
+            .profile-dropdown a:hover, .profile-dropdown button:hover { background-color: #f5f5f5; }
         }
-
-        @media (min-width: 1024px) {
-            .dashboard-grid { grid-template-columns: 2fr 1fr; }
-        }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 2fr 1fr; } }
     </style>
 </head>
 <body>
@@ -211,11 +155,16 @@
         <div class="dashboard-grid">
             <main class="main-content fade-in-up" style="animation-delay: 0.2s;">
                 <div class="stats-grid">
-                    <div class="stat-card"><h3 class="stat-title">Current Month Tiffins</h3><div class="value" id="current-tiffins">--</div></div>
-                    <div class="stat-card"><h3 class="stat-title">Current Month Bill</h3><div class="value" id="current-bill">₹--</div></div>
+                    <div class="stat-card"><h3 class="stat-title">Viewed Month Tiffins</h3><div class="value" id="current-tiffins">--</div></div>
+                    <div class="stat-card"><h3 class="stat-title">Viewed Month Bill</h3><div class="value" id="current-bill">₹--</div></div>
                 </div>
                 <div class="calendar-card">
-                    <h2 id="current-month-title"></h2>
+                    <!-- ADDED WRAPPER AND BUTTONS -->
+                    <div class="calendar-header-controls">
+                        <button class="month-nav-btn" id="prev-month-btn" aria-label="Previous Month">&lt;</button>
+                        <h2 id="current-month-title"></h2>
+                        <button class="month-nav-btn" id="next-month-btn" aria-label="Next Month">&gt;</button>
+                    </div>
                     <div class="calendar-grid">
                         <div class="calendar-header">Sun</div><div class="calendar-header">Mon</div><div class="calendar-header">Tue</div><div class="calendar-header">Wed</div><div class="calendar-header">Thu</div><div class="calendar-header">Fri</div><div class="calendar-header">Sat</div>
                     </div>
@@ -233,85 +182,63 @@
         </div>
     </div>
 
-    <!-- Edit Modals (Separate for stability) -->
+    <!-- Modals remain unchanged -->
     <div id="edit-name-modal" class="modal-overlay"><div class="modal-content"><h2 id="modal-title">Edit Mess Name</h2><form id="edit-name-form"><div class="form-group"><label for="edit-messName">New Mess Name</label><input type="text" id="edit-messName" required></div><div class="modal-actions"><button type="button" class="btn btn-secondary" data-close>Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div></div>
     <div id="edit-price-modal" class="modal-overlay"><div class="modal-content"><h2>Edit Tiffin Price</h2><form id="edit-price-form"><div class="form-group"><label for="edit-pricePerTiffin">New Price per Tiffin</label><input type="number" id="edit-pricePerTiffin" required></div><div class="modal-actions"><button type="button" class="btn btn-secondary" data-close>Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div></div>
     <div id="edit-times-modal" class="modal-overlay"><div class="modal-content"><h2>Edit Notification Times</h2><form id="edit-times-form"><div class="form-group"><label for="edit-timesPerDay">How many tiffins per day?</label><select id="edit-timesPerDay"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div><div id="edit-time-inputs-container"></div><div class="modal-actions"><button type="button" class="btn btn-secondary" data-close>Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form></div></div>
 
     <script src="/js/utils.js"></script>
     <script>
-        // --- YOUR ORIGINAL BACKEND LOGIC ---
-        // I have copied your original script and integrated it with the new, fixed UI.
         let userSettings = {};
         const token = localStorage.getItem('token');
         const userName = localStorage.getItem('userName');
         const VAPID_PUBLIC_KEY = 'BLADGcAhtCKUxSi5QVEG2PA8TYadIqLFmwTh0uESIa0MkSNikSp9PhzwGWGLXlOUaeU0G0NbdGphoRjg_AdvuKo';
 
+        // --- NEW: State variables for calendar navigation ---
+        let fullHistory = [];
+        let currentlyViewedMonthIndex = 0;
+
         document.addEventListener('DOMContentLoaded', () => {
             if (!token) { window.location.href = '/login.html'; return; }
             
-            // --- NEW UI LOGIC ---
+            // --- UI LOGIC (Navbar, Modals, etc.) ---
             const profileAvatar = document.getElementById('profile-avatar');
             const profileDropdown = document.getElementById('profile-dropdown');
             const menuToggle = document.getElementById('menu-toggle');
             const navMenu = document.getElementById('nav-menu');
             const allModals = document.querySelectorAll('.modal-overlay');
-
             profileAvatar.textContent = userName ? userName.charAt(0).toUpperCase() : 'U';
-
-            // Mobile Menu
             menuToggle.addEventListener('click', () => navMenu.classList.toggle('active'));
-
-            // Desktop Dropdown
             profileAvatar.addEventListener('click', (e) => {
-                if(window.innerWidth >= 768) { // Only allow click on desktop
-                    e.stopPropagation();
-                    profileDropdown.classList.toggle('active');
-                }
+                if(window.innerWidth >= 768) { e.stopPropagation(); profileDropdown.classList.toggle('active'); }
             });
             document.addEventListener('click', (e) => {
-                if (!profileAvatar.contains(e.target) && !profileDropdown.contains(e.target)) {
-                    profileDropdown.classList.remove('active');
-                }
-                 // Close mobile menu if clicking outside
-                if (!navMenu.contains(e.target) && !menuToggle.contains(e.target) && navMenu.classList.contains('active')) {
-                    navMenu.classList.remove('active');
-                }
+                if (!profileAvatar.contains(e.target) && !profileDropdown.contains(e.target)) { profileDropdown.classList.remove('active'); }
+                if (!navMenu.contains(e.target) && !menuToggle.contains(e.target) && navMenu.classList.contains('active')) { navMenu.classList.remove('active'); }
             });
-            
-            // Modal Handling (Fixed & Robust)
-            const modalTriggers = {
-                'name': document.getElementById('edit-name-modal'),
-                'price': document.getElementById('edit-price-modal'),
-                'times': document.getElementById('edit-times-modal')
-            };
+            const modalTriggers = { 'name': document.getElementById('edit-name-modal'), 'price': document.getElementById('edit-price-modal'), 'times': document.getElementById('edit-times-modal') };
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const field = e.target.dataset.field;
-                    const modal = modalTriggers[field];
-                    if (modal) {
-                        populateModalForms();
-                        modal.style.display = 'flex';
-                    }
-                    navMenu.classList.remove('active'); // Close mobile menu after click
-                    profileDropdown.classList.remove('active'); // Close desktop dropdown
+                    const field = e.target.dataset.field; const modal = modalTriggers[field];
+                    if (modal) { populateModalForms(); modal.style.display = 'flex'; }
+                    navMenu.classList.remove('active'); profileDropdown.classList.remove('active');
                 });
             });
             allModals.forEach(modal => {
                 modal.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('modal-overlay') || e.target.hasAttribute('data-close') || e.target.closest('[data-close]')) {
-                        modal.style.display = 'none';
-                    }
+                    if (e.target.classList.contains('modal-overlay') || e.target.hasAttribute('data-close') || e.target.closest('[data-close]')) { modal.style.display = 'none'; }
                 });
             });
 
-            // --- YOUR ORIGINAL SCRIPT CORE ---
+            // --- YOUR SCRIPT CORE + NEW LOGIC ---
             const currentTiffinsEl = document.getElementById('current-tiffins');
             const currentBillEl = document.getElementById('current-bill');
             const historyListEl = document.getElementById('history-list');
             const currentMonthTitleEl = document.getElementById('current-month-title');
             const calendarGridEl = document.getElementById('calendar-grid');
             const missedListEl = document.getElementById('missed-list');
+            const prevMonthBtn = document.getElementById('prev-month-btn');
+            const nextMonthBtn = document.getElementById('next-month-btn');
             
             async function fetchAndRenderDashboard() {
                 try {
@@ -321,17 +248,57 @@
                     if (!data.settings || !data.settings.messName) { window.location.href = '/setup.html'; return; }
                     
                     userSettings = data.settings;
-                    const currentMonthData = data.historyWithStats[0] || { totalTiffins: 0, totalPrice: 0, entries: [], month: new Date().toISOString().slice(0, 7) };
-
-                    currentTiffinsEl.textContent = currentMonthData.totalTiffins;
-                    currentBillEl.textContent = `₹${currentMonthData.totalPrice.toFixed(2)}`;
                     
+                    // --- NEW: Store full history and render the current month ---
+                    fullHistory = data.historyWithStats;
+                    if (fullHistory.length === 0) {
+                        // Handle case with no data at all
+                        fullHistory.push({ totalTiffins: 0, totalPrice: 0, entries: [], month: new Date().toISOString().slice(0, 7) });
+                    }
+                    currentlyViewedMonthIndex = 0; // Always start at the latest month
+                    renderMonthByIndex(currentlyViewedMonthIndex);
+
+                    // These only need to be rendered once
                     renderHistoryList(data.historyWithStats);
-                    renderCalendar(currentMonthData, userSettings);
-                    renderMissedNotifications(currentMonthData.entries);
+                    renderMissedNotifications(fullHistory[0].entries); // Pending actions are always for the current month
                 } catch (err) { console.error('Error fetching dashboard:', err); }
             }
             
+            // --- NEW: Central function to render a specific month by its index ---
+            function renderMonthByIndex(index) {
+                if (index < 0 || index >= fullHistory.length) return; // Safety check
+
+                const monthData = fullHistory[index];
+                
+                // Update stat cards
+                currentTiffinsEl.textContent = monthData.totalTiffins;
+                currentBillEl.textContent = `₹${monthData.totalPrice.toFixed(2)}`;
+
+                // Update calendar
+                renderCalendar(monthData, userSettings);
+
+                // Update button states
+                // Next month = moving to a smaller index (closer to present)
+                nextMonthBtn.disabled = (index === 0);
+                // Previous month = moving to a larger index (further to past)
+                prevMonthBtn.disabled = (index === fullHistory.length - 1);
+            }
+
+            // --- NEW: Event listeners for navigation buttons ---
+            prevMonthBtn.addEventListener('click', () => {
+                if (currentlyViewedMonthIndex < fullHistory.length - 1) {
+                    currentlyViewedMonthIndex++;
+                    renderMonthByIndex(currentlyViewedMonthIndex);
+                }
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                if (currentlyViewedMonthIndex > 0) {
+                    currentlyViewedMonthIndex--;
+                    renderMonthByIndex(currentlyViewedMonthIndex);
+                }
+            });
+
             function renderHistoryList(history) { historyListEl.innerHTML = ''; if(!history.length){historyListEl.innerHTML = '<p>No history yet.</p>'; return;} history.forEach(month => { const [year, monthNum] = month.month.split('-'); const monthName = new Date(year, monthNum - 1).toLocaleString('default', { month: 'long' }); historyListEl.innerHTML += `<div class="month-summary"><div class="month-name">${monthName} ${year}</div><div class="month-stats"><strong>${month.totalTiffins}</strong> tiffins / <strong>₹${month.totalPrice.toFixed(2)}</strong></div></div>`; }); }
             function renderCalendar(monthData, settings) { calendarGridEl.innerHTML = ''; const [year, month] = monthData.month.split('-').map(Number); const firstDayOfMonth = new Date(year, month - 1, 1).getDay(); const daysInMonth = new Date(year, month, 0).getDate(); const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' }); currentMonthTitleEl.textContent = monthName; for (let i = 0; i < firstDayOfMonth; i++) { calendarGridEl.innerHTML += `<div class="day-cell other-month"></div>`; } for (let day = 1; day <= daysInMonth; day++) { const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`; let slotsHTML = ''; const times = settings.notificationTimes || []; times.forEach(time => { const entry = monthData.entries.find(e => e.date === dateStr && e.time === time); if (entry) { slotsHTML += `<div class="slot ${entry.status}">${entry.status === 'skipped' ? `<span class="tooltip">${entry.reason || 'No reason'}</span>` : ''}</div>`; } else { slotsHTML += `<div class="slot"></div>`; } }); calendarGridEl.innerHTML += `<div class="day-cell"><div class="day-number">${day}</div><div class="tiffin-slots">${slotsHTML}</div></div>`; } }
             function renderMissedNotifications(entries) { const pendingEntries = entries.filter(e => e.status === 'pending'); missedListEl.innerHTML = ''; if (pendingEntries.length === 0) { missedListEl.innerHTML = '<p>No pending actions.</p>'; return; } pendingEntries.forEach(entry => { const entryDate = new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); missedListEl.innerHTML += `<div class="missed-item" data-date="${entry.date}" data-time="${entry.time}"><span><strong>${entryDate} at ${entry.time}</strong>?</span><div class="missed-item-actions"><button class="btn-yes">Yes</button><button class="btn-no">No</button></div></div>`; }); }
@@ -339,19 +306,14 @@
             missedListEl.addEventListener('click', async (e) => { if (e.target.tagName !== 'BUTTON') return; const item = e.target.closest('.missed-item'); const date = item.dataset.date; const time = item.dataset.time; const isYes = e.target.classList.contains('btn-yes'); const status = isYes ? 'taken' : 'skipped'; let reason = ''; if (!isYes) { reason = prompt('Reason for skipping (optional):'); } try { const res = await fetch('/api/dashboard/update-tiffin', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ date, time, status, reason }) }); if(!res.ok) throw new Error('Failed to update status'); fetchAndRenderDashboard(); } catch (err) { alert('Could not update status.'); } });
             
             async function initPushNotifications() { if ('serviceWorker' in navigator && 'PushManager' in window) { try { const register = await navigator.serviceWorker.register('/sw.js'); let subscription = await register.pushManager.getSubscription(); if (subscription === null) { subscription = await register.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) }); await fetch('/api/dashboard/save-subscription', { method: 'POST', body: JSON.stringify(subscription), headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } }); } } catch (err) { console.error('Push Notification error:', err); } } }
-
-            // Form Submissions & Modal Population
             const editTimesPerDaySelect = document.getElementById('edit-timesPerDay');
             function renderEditTimeInputs() { const count = parseInt(editTimesPerDaySelect.value); const container = document.getElementById('edit-time-inputs-container'); container.innerHTML = ''; const timeLabels = ['Breakfast', 'Lunch', 'Dinner']; for (let i = 0; i < count; i++) { container.innerHTML += `<div class="form-group"><label>Time ${i+1}</label><input type="time" class="edit-time-input" required></div>`; } }
             editTimesPerDaySelect.addEventListener('change', renderEditTimeInputs);
             function populateModalForms() { document.getElementById('edit-messName').value = userSettings.messName; document.getElementById('edit-pricePerTiffin').value = userSettings.pricePerTiffin; editTimesPerDaySelect.value = userSettings.timesPerDay; renderEditTimeInputs(); document.querySelectorAll('.edit-time-input').forEach((input, i) => { input.value = userSettings.notificationTimes[i]; }); }
-
             async function updateSettings(payload) { try { const res = await fetch('/api/dashboard/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) }); if (!res.ok) throw new Error('Failed to update.'); allModals.forEach(m => m.style.display = 'none'); fetchAndRenderDashboard(); } catch (err) { alert(err.message); } }
             document.getElementById('edit-name-form').addEventListener('submit', (e) => { e.preventDefault(); updateSettings({ messName: document.getElementById('edit-messName').value }); });
             document.getElementById('edit-price-form').addEventListener('submit', (e) => { e.preventDefault(); updateSettings({ pricePerTiffin: document.getElementById('edit-pricePerTiffin').value }); });
             document.getElementById('edit-times-form').addEventListener('submit', (e) => { e.preventDefault(); const timeInputs = document.querySelectorAll('.edit-time-input'); const notificationTimes = Array.from(timeInputs).map(input => input.value); updateSettings({ notificationTimes }); });
-            
-            // Logout & Delete
             document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = '/login.html'; });
             document.getElementById('delete-account-btn').addEventListener('click', async (e) => { e.preventDefault(); if (confirm('ARE YOU SURE? This will permanently delete your account.')) { try { const res = await fetch('/api/dashboard/delete-account', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); if (!res.ok) throw new Error('Failed to delete account.'); alert('Account deleted.'); localStorage.clear(); window.location.href = '/'; } catch (err) { alert(err.message); } } });
 
