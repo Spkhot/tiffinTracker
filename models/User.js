@@ -6,8 +6,7 @@ const TiffinEntrySchema = new mongoose.Schema({
   time: { type: String, required: true }, // Format "HH:MM"
   status: { type: String, enum: ['taken', 'skipped', 'pending'], default: 'pending' },
   reason: { type: String, default: '' },
-   notificationToken: { type: String },
-   timezone: { type: String } 
+   notificationToken: { type: String }
 });
 
 const MonthlyHistorySchema = new mongoose.Schema({
@@ -27,7 +26,8 @@ const UserSchema = new mongoose.Schema({
     messName: { type: String, default: '' },
     pricePerTiffin: { type: Number, default: 0 },
     timesPerDay: { type: Number, default: 1 },
-    notificationTimes: { type: [String], default: [] } // Array of "HH:MM"
+    notificationTimes: { type: [String], default: [] }, // Array of "HH:MM"
+    timezone: { type: String }
   },
 
   // For push notifications
