@@ -4,16 +4,12 @@ const cron = require('node-cron');
 const User = require('../models/User');
 const { sendNotification } = require('./notificationService');
 const crypto = require('crypto');
-
-// --- THE FINAL, BULLETPROOF IMPORT METHOD ---
-// We are now importing the functions directly from their specific files.
-// This is guaranteed to work if the package is installed.
-const { utcToZonedTime } = require('date-fns-tz/utcToZonedTime');
-const { format } = require('date-fns-tz/format');
+const moment = require('moment-timezone'); // <-- IMPORT THE NEW LIBRARY
 
 const startScheduler = () => {
     cron.schedule('* * * * *', async () => {
-        const nowUTC = new Date();
+        // We will work with moment objects now
+        const nowUTC = moment.utc();
         console.log(`[Scheduler] Running... Server UTC time is: ${nowUTC.toISOString()}`);
 
         try {
@@ -29,24 +25,27 @@ const startScheduler = () => {
             }
 
             users.forEach(async (user) => {
-                const userTimezone = user.settings.timezone;
-                if (!userTimezone) return;
+                const userTimezone = user.settings.timezone; // e.g., 'Asia/Kolkata'
+                if (!userTimezone || !moment.tz.zone(userTimezone)) {
+                    console.error(`[Scheduler] Invalid timezone '${userTimezone}' for user ${user.email}. Skipping.`);
+                    return; // Skip user if timezone is invalid
+                }
                 
-                // --- NO CHANGE NEEDED HERE ---
-                // The function call is now valid because the import above is direct.
-                const nowInUserTimezone = utcToZonedTime(nowUTC, userTimezone);
+                // Convert the current UTC time to the user's local time
+                const nowInUserTimezone = nowUTC.clone().tz(userTimezone);
 
-                const localHour = nowInUserTimezone.getHours();
-                const localMinute = nowInUserTimezone.getMinutes();
+                // Get the current hour and minute IN THE USER'S TIMEZONE
+                const localHour = nowInUserTimezone.hour();
+                const localMinute = nowInUserTimezone.minute();
 
                 user.settings.notificationTimes.forEach(async (time) => {
                     const [savedHour, savedMinute] = time.split(':');
                     
                     if (localHour == savedHour && localMinute == savedMinute) {
                         
-                        // --- NO CHANGE NEEDED HERE ---
-                        const currentDate = format(nowInUserTimezone, 'yyyy-MM-dd', { timeZone: userTimezone });
-                        const currentTime = format(nowInUserTimezone, 'HH:mm', { timeZone: userTimezone });
+                        const currentDate = nowInUserTimezone.format('YYYY-MM-DD');
+                        const currentTime = nowInUserTimezone.format('HH:mm');
+                        const currentMonth = nowInUserTimezone.format('YYYY-MM');
 
                         const notificationToken = crypto.randomBytes(16).toString('hex');
                         
@@ -57,7 +56,6 @@ const startScheduler = () => {
                             data: { date: currentDate, time: currentTime, token: notificationToken }
                         });
 
-                        const currentMonth = format(nowInUserTimezone, 'yyyy-MM', { timeZone: userTimezone });
                         let monthHistory = user.tiffinHistory.find(h => h.month === currentMonth);
                         
                         if (!monthHistory) {
