@@ -32,28 +32,41 @@ exports.register = async (req, res) => {
 
     // authController.js -> register function
 
+// authController.js -> register function
+
 // ... inside the try block ...
 
 const verificationUrl = `${process.env.SERVER_URL}/api/auth/verify/${verificationToken}`;
 
-// Create a simple, plain text message instead of HTML
-const plainTextMessage = `
-Welcome to TiffinTracker!
-
-To complete your registration, please verify your email address.
-
-Copy the link below and paste it into your web browser's address bar:
-
-${verificationUrl}
-
-If you did not sign up for TiffinTracker, please ignore this email.
+// --- NEW, ATTRACTIVE HTML EMAIL TEMPLATE ---
+const message = `
+  <div style="font-family: 'Poppins', Arial, sans-serif; background-color: #f9f9f9; padding: 40px; text-align: center;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.07);">
+      <div style="background-color: #FF7B54; color: #ffffff; padding: 20px;">
+        <h1 style="margin: 0; font-size: 24px;">🍱 TiffinTracker</h1>
+      </div>
+      <div style="padding: 30px 40px; color: #3D3D3D; line-height: 1.7;">
+        <h2 style="font-size: 22px; margin-top: 0;">Welcome, ${name}! 👋</h2>
+        <p>We're excited to have you on board. Just one more step to get started.</p>
+        <p>Please click the button below to verify your email address and activate your account:</p>
+        <a href="${verificationUrl}" target="_blank" style="display: inline-block; background-color: #FF7B54; color: #ffffff; padding: 12px 25px; margin: 20px 0; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 16px;">
+          ✅ Verify My Account
+        </a>
+        <p style="font-size: 12px; color: #888;">If the button above doesn't work, you can copy and paste this link into your browser:</p>
+        <p style="font-size: 12px; color: #888; word-break: break-all;">${verificationUrl}</p>
+      </div>
+      <div style="background-color: #f1f1f1; padding: 15px; font-size: 12px; color: #777;">
+        If you did not sign up for TiffinTracker, please ignore this email.
+      </div>
+    </div>
+  </div>
 `;
 
-// IMPORTANT: Send this message using the 'text' property, not 'html' or 'message'
+// IMPORTANT: Send this message using the 'message' property again
 await sendEmail({
   email: user.email,
-  subject: 'Verify Your TiffinTracker Account',
-  text: plainTextMessage, // Use 'text' instead of 'message'
+  subject: 'Welcome to TiffinTracker! Please Verify Your Email',
+  message, // Use 'message' which maps to HTML in your email service
 });
     
     res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });

@@ -242,90 +242,102 @@
             <div id="time-inputs-container">
                 <!-- Time inputs will be generated here by JS -->
             </div>
+            <input type="hidden" id="timezone" name="timezone">
             <button type="submit" class="btn">Save & Go to Dashboard</button>
             <p id="message" class="message"></p>
         </form>
     </div>
 
-    <!-- YOUR ORIGINAL SCRIPT - UNCHANGED, WITH NEW LOGOUT LOGIC ADDED -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- NEW LOGIC FOR LOGOUT BUTTON ---
-            const logoutBtn = document.getElementById('logout-btn');
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem('token');
-                localStorage.removeItem('userName');
+   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- NEW LOGIC FOR LOGOUT BUTTON ---
+        const logoutBtn = document.getElementById('logout-btn');
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = '/login.html';
+        });
+
+        // --- ADD THIS ONE LINE to set the timezone value as soon as the page loads ---
+        document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        // --- YOUR ORIGINAL SCRIPT STARTS HERE ---
+        const timesPerDaySelect = document.getElementById('timesPerDay');
+        const timeInputsContainer = document.getElementById('time-inputs-container');
+        const setupForm = document.getElementById('setup-form');
+        const messageEl = document.getElementById('message');
+
+        const timeLabels = ['Breakfast Time', 'Lunch Time', 'Dinner Time'];
+
+        function renderTimeInputs() {
+            const count = parseInt(timesPerDaySelect.value);
+            timeInputsContainer.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                // Added form-group class for animation consistency
+                timeInputsContainer.innerHTML += `
+                    <div class="form-group">
+                        <label for="time${i}">${timeLabels[i] || `Meal Time ${i+1}`}</label>
+                        <input type="time" id="time${i}" required>
+                    </div>
+                `;
+            }
+        }
+
+        timesPerDaySelect.addEventListener('change', renderTimeInputs);
+        
+        // Initial render
+        renderTimeInputs();
+
+        setupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            messageEl.textContent = '';
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('You are not logged in. Please log in to continue.');
                 window.location.href = '/login.html';
-            });
-
-            // --- YOUR ORIGINAL SCRIPT STARTS HERE ---
-            const timesPerDaySelect = document.getElementById('timesPerDay');
-            const timeInputsContainer = document.getElementById('time-inputs-container');
-            const setupForm = document.getElementById('setup-form');
-            const messageEl = document.getElementById('message');
-
-            const timeLabels = ['Breakfast Time', 'Lunch Time', 'Dinner Time'];
-
-            function renderTimeInputs() {
-                const count = parseInt(timesPerDaySelect.value);
-                timeInputsContainer.innerHTML = '';
-                for (let i = 0; i < count; i++) {
-                    // Added form-group class for animation consistency
-                    timeInputsContainer.innerHTML += `
-                        <div class="form-group">
-                            <label for="time${i}">${timeLabels[i] || `Meal Time ${i+1}`}</label>
-                            <input type="time" id="time${i}" required>
-                        </div>
-                    `;
-                }
+                return;
             }
 
-            timesPerDaySelect.addEventListener('change', renderTimeInputs);
-            
-            // Initial render
-            renderTimeInputs();
+            const messName = document.getElementById('messName').value;
+            const pricePerTiffin = document.getElementById('pricePerTiffin').value;
+            const timesPerDay = parseInt(timesPerDaySelect.value);
+            const notificationTimes = [];
+            for (let i = 0; i < timesPerDay; i++) {
+                notificationTimes.push(document.getElementById(`time${i}`).value);
+            }
+            // --- ADD THIS ONE LINE to get the timezone from the hidden input ---
+            const timezone = document.getElementById('timezone').value;
 
-            setupForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                messageEl.textContent = '';
+            try {
+                const res = await fetch('/api/dashboard/settings', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    // Update the body to include the timezone
+                    body: JSON.stringify({ 
+                        messName, 
+                        pricePerTiffin, 
+                        timesPerDay, 
+                        notificationTimes,
+                        timezone // <-- ADD THE TIMEZONE HERE
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Failed to save settings');
                 
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    alert('You are not logged in. Please log in to continue.');
-                    window.location.href = '/login.html';
-                    return;
-                }
-
-                const messName = document.getElementById('messName').value;
-                const pricePerTiffin = document.getElementById('pricePerTiffin').value;
-                const timesPerDay = parseInt(timesPerDaySelect.value);
-                const notificationTimes = [];
-                for (let i = 0; i < timesPerDay; i++) {
-                    notificationTimes.push(document.getElementById(`time${i}`).value);
-                }
-
-                try {
-                    const res = await fetch('/api/dashboard/settings', {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ messName, pricePerTiffin, timesPerDay, notificationTimes })
-                    });
-
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.message || 'Failed to save settings');
-                    
-                    window.location.href = '/dashboard.html';
-                    
-                } catch (err) {
-                    messageEl.textContent = err.message;
-                    messageEl.className = 'message error';
-                }
-            });
+                window.location.href = '/dashboard.html';
+                
+            } catch (err) {
+                messageEl.textContent = err.message;
+                messageEl.className = 'message error';
+            }
         });
-    </script>
+    });
+</script>
 </body>
 </html>

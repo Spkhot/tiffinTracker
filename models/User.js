@@ -6,7 +6,8 @@ const TiffinEntrySchema = new mongoose.Schema({
   time: { type: String, required: true }, // Format "HH:MM"
   status: { type: String, enum: ['taken', 'skipped', 'pending'], default: 'pending' },
   reason: { type: String, default: '' },
-   notificationToken: { type: String }
+   notificationToken: { type: String },
+   timezone: { type: String } 
 });
 
 const MonthlyHistorySchema = new mongoose.Schema({

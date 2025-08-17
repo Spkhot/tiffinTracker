@@ -3,64 +3,85 @@
 const cron = require('node-cron');
 const User = require('../models/User');
 const { sendNotification } = require('./notificationService');
-const crypto = require('crypto'); // <-- ADD THIS LINE
+const crypto = require('crypto');
+const { zonedTimeToUtc, utcToZonedTime, format } = require('date-fns-tz'); // <-- IMPORT from new library
 
 const startScheduler = () => {
+    // This cron job still runs every minute based on the server's UTC clock
     cron.schedule('* * * * *', async () => {
-        const now = new Date();
-        console.log(`[Scheduler] Running... Server time is: ${now.toString()}`);
+        const nowUTC = new Date(); // This is the current time in UTC
+        console.log(`[Scheduler] Running... Server UTC time is: ${nowUTC.toISOString()}`);
 
         try {
-            const potentialUsers = await User.find({
+            // Find all users who have notification settings and a timezone
+            const users = await User.find({
                 'settings.notificationTimes': { $ne: null, $not: { $size: 0 } },
+                'settings.timezone': { $exists: true, $ne: null }, // Important: only get users with a timezone
                 'isVerified': true,
                 'pushSubscription': { $exists: true }
             });
 
-            if (potentialUsers.length === 0) return;
+            if (users.length === 0) {
+                // console.log('[Scheduler] No users scheduled for notifications right now.');
+                return;
+            }
 
-            console.log(`[Scheduler] Checking ${potentialUsers.length} potential users.`);
+            users.forEach(async (user) => {
+                const userTimezone = user.settings.timezone; // e.g., 'Asia/Kolkata'
+                if (!userTimezone) return; // Skip user if for some reason timezone is missing
+                
+                // Convert the current UTC time to the user's local time
+                const nowInUserTimezone = utcToZonedTime(nowUTC, userTimezone);
 
-            potentialUsers.forEach(async (user) => {
+                // Get the current hour and minute IN THE USER'S TIMEZONE
+                const localHour = nowInUserTimezone.getHours();
+                const localMinute = nowInUserTimezone.getMinutes();
+
                 user.settings.notificationTimes.forEach(async (time) => {
-                    const [hour, minute] = time.split(':');
+                    const [savedHour, savedMinute] = time.split(':');
                     
-                    if (now.getHours() == hour && now.getMinutes() == minute) {
-                        const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                        const currentDate = now.toISOString().split('T')[0];
+                    // Compare the user's current local time with their saved notification time
+                    if (localHour == savedHour && localMinute == savedMinute) {
                         
-                        // --- START OF CHANGES ---
-                        const notificationToken = crypto.randomBytes(16).toString('hex'); // Create a unique token
+                        // --- The rest of your notification logic is the same ---
+                        // But we use the timezone-aware date for consistency
+                        const currentDate = format(nowInUserTimezone, 'yyyy-MM-dd', { timeZone: userTimezone });
+                        const currentTime = format(nowInUserTimezone, 'HH:mm', { timeZone: userTimezone });
 
+                        const notificationToken = crypto.randomBytes(16).toString('hex');
+                        
                         const payload = JSON.stringify({
                             title: `Time for your tiffin, ${user.name}!`,
                             body: `Did you take your tiffin from ${user.settings.messName}?`,
                             actions: [{ action: 'yes', title: '✅ Yes' }, { action: 'no', title: '❌ No' }],
-                            data: { date: currentDate, time: currentTime, token: notificationToken } // Add token to data
+                            data: { date: currentDate, time: currentTime, token: notificationToken }
                         });
 
-                        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                        const currentMonth = format(nowInUserTimezone, 'yyyy-MM', { timeZone: userTimezone });
                         let monthHistory = user.tiffinHistory.find(h => h.month === currentMonth);
+                        
                         if (!monthHistory) {
                             user.tiffinHistory.push({ month: currentMonth, entries: [] });
-                            await user.save();
-                            monthHistory = user.tiffinHistory.find(h => h.month === currentMonth);
+                            // The save will happen below, so no need for a separate one here
+                            monthHistory = user.tiffinHistory[user.tiffinHistory.length - 1];
                         }
                         
                         const entryExists = monthHistory.entries.some(e => e.date === currentDate && e.time === currentTime);
+                        
                         if (!entryExists) {
                             monthHistory.entries.push({ 
                                 date: currentDate, 
                                 time: currentTime, 
                                 status: 'pending',
-                                notificationToken: notificationToken // Save the token with the entry
+                                notificationToken: notificationToken
                             });
-                            await user.save();
+                            await user.save(); // Save the new entry
+                            
+                            console.log(`[Scheduler] MATCH! Sending notification to ${user.email} for their ${currentTime} tiffin.`);
+                            await sendNotification(user.pushSubscription, payload);
+                        } else {
+                            console.log(`[Scheduler] Notification already sent for ${user.email} at ${currentTime} on ${currentDate}.`);
                         }
-                        // --- END OF CHANGES ---
-                       
-                        await sendNotification(user.pushSubscription, payload);
-                        console.log(`[Scheduler] Notification SENT successfully to ${user.email}`);
                     }
                 });
             });
