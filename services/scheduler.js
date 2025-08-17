@@ -5,9 +5,11 @@ const User = require('../models/User');
 const { sendNotification } = require('./notificationService');
 const crypto = require('crypto');
 
-// --- 1. THE CODE CHANGE IS HERE ---
-// Instead of destructuring, we import the entire library object.
-const dateFnsTz = require('date-fns-tz'); 
+// --- THE FINAL, BULLETPROOF IMPORT METHOD ---
+// We are now importing the functions directly from their specific files.
+// This is guaranteed to work if the package is installed.
+const { utcToZonedTime } = require('date-fns-tz/utcToZonedTime');
+const { format } = require('date-fns-tz/format');
 
 const startScheduler = () => {
     cron.schedule('* * * * *', async () => {
@@ -30,9 +32,9 @@ const startScheduler = () => {
                 const userTimezone = user.settings.timezone;
                 if (!userTimezone) return;
                 
-                // --- 2. THE CODE CHANGE IS HERE ---
-                // We now call the function from the library object.
-                const nowInUserTimezone = dateFnsTz.utcToZonedTime(nowUTC, userTimezone);
+                // --- NO CHANGE NEEDED HERE ---
+                // The function call is now valid because the import above is direct.
+                const nowInUserTimezone = utcToZonedTime(nowUTC, userTimezone);
 
                 const localHour = nowInUserTimezone.getHours();
                 const localMinute = nowInUserTimezone.getMinutes();
@@ -42,10 +44,9 @@ const startScheduler = () => {
                     
                     if (localHour == savedHour && localMinute == savedMinute) {
                         
-                        // --- 3. THE CODE CHANGE IS HERE ---
-                        // Also call 'format' from the library object.
-                        const currentDate = dateFnsTz.format(nowInUserTimezone, 'yyyy-MM-dd', { timeZone: userTimezone });
-                        const currentTime = dateFnsTz.format(nowInUserTimezone, 'HH:mm', { timeZone: userTimezone });
+                        // --- NO CHANGE NEEDED HERE ---
+                        const currentDate = format(nowInUserTimezone, 'yyyy-MM-dd', { timeZone: userTimezone });
+                        const currentTime = format(nowInUserTimezone, 'HH:mm', { timeZone: userTimezone });
 
                         const notificationToken = crypto.randomBytes(16).toString('hex');
                         
@@ -56,7 +57,7 @@ const startScheduler = () => {
                             data: { date: currentDate, time: currentTime, token: notificationToken }
                         });
 
-                        const currentMonth = dateFnsTz.format(nowInUserTimezone, 'yyyy-MM', { timeZone: userTimezone });
+                        const currentMonth = format(nowInUserTimezone, 'yyyy-MM', { timeZone: userTimezone });
                         let monthHistory = user.tiffinHistory.find(h => h.month === currentMonth);
                         
                         if (!monthHistory) {
