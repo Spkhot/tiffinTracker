@@ -4,43 +4,48 @@ self.addEventListener('push', e => {
     const data = e.data.json();
     const options = {
         body: data.body,
-        icon: '/assets/images/logo.png',
+        icon: 'assets/image.png',
         actions: data.actions,
         data: data.data
     };
     self.registration.showNotification(data.title, options);
 });
 
-self.addEventListener('notificationclick', e => {
-    e.notification.close();
+// In your public/sw.js file
 
-    const notificationData = e.notification.data;
-    const action = e.action; // 'yes' or 'no'
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close(); // Close the notification
 
-    if (action === 'yes' || action === 'no') {
-        const status = (action === 'yes') ? 'taken' : 'skipped';
-        
-        // This is the new magic!
-        // We send the temporary token to our new backend endpoint.
-        const updatePromise = fetch('/api/dashboard/update-from-notification', {
+    const data = event.notification.data;
+    const action = event.action; // 'yes' or 'no'
+
+    if (!action) {
+        // This is when the user clicks the notification body, not a button
+        console.log('Notification body clicked.');
+        return;
+    }
+
+    if (action === 'yes') {
+        // If 'Yes', just send the response to the backend to update.
+        // The user doesn't need to be redirected.
+        const responsePromise = fetch('/api/notifications/respond', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                token: notificationData.token,
-                status: status,
-                // For now, we handle reason separately. A prompt from a service worker is not possible.
+                token: data.token,
+                status: 'taken',
+                reason: ''
             })
-        }).then(res => {
-            if (!res.ok) {
-                console.error('Failed to update tiffin status from notification.');
-            } else {
-                console.log('Tiffin status updated from notification click.');
-            }
         });
+        event.waitUntil(responsePromise);
+    } else if (action === 'no') {
+        // If 'No', open the dashboard and tell it to ask for a reason.
+        // We pass the unique notification token in the URL.
+        const urlToOpen = new URL('/dashboard.html', self.location.origin);
+        urlToOpen.searchParams.append('action', 'prompt_reason');
+        urlToOpen.searchParams.append('token', data.token);
 
-        // Tell the browser to wait until our fetch call is complete
-        e.waitUntil(updatePromise);
+        const openWindowPromise = clients.openWindow(urlToOpen.href);
+        event.waitUntil(openWindowPromise);
     }
 });

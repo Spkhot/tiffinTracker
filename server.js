@@ -31,7 +31,7 @@ webpush.setVapidDetails(
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-
+app.use('/api/notifications', require('./routes/notifications'));
 // Serve static assets (our frontend files)
 app.use(express.static(path.join(__dirname, 'public')));
 
