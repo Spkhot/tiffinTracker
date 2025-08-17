@@ -166,6 +166,8 @@ exports.updateFromNotification = async (req, res) => {
 
 // @desc    Update user settings
 // @route   PUT /api/dashboard/settings
+// This is the complete, correct function. Just copy and paste it.
+
 exports.updateSettings = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -174,10 +176,18 @@ exports.updateSettings = async (req, res) => {
             // Only update the fields that are sent in the request
             if (req.body.messName) user.settings.messName = req.body.messName;
             if (req.body.pricePerTiffin) user.settings.pricePerTiffin = req.body.pricePerTiffin;
+            
+            // This logic is slightly different from your setup form, but let's handle both
             if (req.body.notificationTimes) {
                 user.settings.notificationTimes = req.body.notificationTimes;
-                user.settings.timesPerDay = req.body.notificationTimes.length;
+                // If timesPerDay is sent from the setup form, use it. Otherwise, calculate it.
+                user.settings.timesPerDay = req.body.timesPerDay || req.body.notificationTimes.length;
             }
+
+            // --- THIS IS THE FIX ---
+            // Add this line to save the timezone if it's sent
+            if (req.body.timezone) user.settings.timezone = req.body.timezone;
+            // ---------------------
             
             const updatedUser = await user.save();
             res.json(updatedUser.settings);
