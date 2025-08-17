@@ -30,18 +30,31 @@ exports.register = async (req, res) => {
       verificationToken,
     });
 
-    const verificationUrl = `${process.env.SERVER_URL}/api/auth/verify/${verificationToken}`;
-    const message = `
-      <h1>Welcome to Tiffin Tracker!</h1>
-      <p>Please click the link below to verify your email address:</p>
-      <a href="${verificationUrl}" target="_blank">Verify Email</a>
-    `;
+    // authController.js -> register function
 
-    await sendEmail({
-      email: user.email,
-      subject: 'Email Verification - Tiffin Tracker',
-      message,
-    });
+// ... inside the try block ...
+
+const verificationUrl = `${process.env.SERVER_URL}/api/auth/verify/${verificationToken}`;
+
+// Create a simple, plain text message instead of HTML
+const plainTextMessage = `
+Welcome to TiffinTracker!
+
+To complete your registration, please verify your email address.
+
+Copy the link below and paste it into your web browser's address bar:
+
+${verificationUrl}
+
+If you did not sign up for TiffinTracker, please ignore this email.
+`;
+
+// IMPORTANT: Send this message using the 'text' property, not 'html' or 'message'
+await sendEmail({
+  email: user.email,
+  subject: 'Verify Your TiffinTracker Account',
+  text: plainTextMessage, // Use 'text' instead of 'message'
+});
     
     res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
 

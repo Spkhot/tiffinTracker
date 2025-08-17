@@ -17,13 +17,15 @@ const sendEmail = async (options) => {
     },
   });
 
-  const message = {
-    // THIS IS THE CRITICAL FIX
-    from: `"Tiffin Tracker" <${process.env.EMAIL_USER}>`,
-    to: options.email,
-    subject: options.subject,
-    html: options.message,
-  };
+ // emailService.js
+
+const message = {
+  from: `"Tiffin Tracker" <${process.env.EMAIL_USER}>`, // Make sure this uses your .env variable
+  to: options.email,
+  subject: options.subject,
+  text: options.text,     // Add this line for the plain text content
+  html: options.message,  // Keep this for any future HTML emails you might send
+};
 
   try {
     const info = await transporter.sendMail(message);
