@@ -77,7 +77,7 @@
             border-radius: 50px;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            box-shadow: 0 4px 20px rgba(243, 156, 18, 0.3);
             border: none;
             cursor: pointer;
         }
@@ -425,8 +425,9 @@
         <div class="nav-links" id="nav-links">
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
+            <a href="about">about</a>
             <a href="/login.html">Login</a>
-            <a href="/signup.html" class="btn">Sign Up Free</a>
+            <a href="/signup.html" class="btn">Get start</a>
         </div>
     </nav>
 </header>
@@ -535,7 +536,7 @@
         if (token && userName) {
             // Adjusts the content of the nav-links container
             navLinks.innerHTML = `
-                <a href="/dashboard.html">Welcome, ${userName}</a>
+                <a href="/dashboard.html">👋Welcome, ${userName}</a>
                 <a href="#" id="logout-btn" class="btn">Logout</a>
             `;
 

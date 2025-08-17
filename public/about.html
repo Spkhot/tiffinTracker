@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - TiffinTracker</title>
+    <!-- [IMPROVEMENT] Added a modern icon library (BoxIcons) -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/image.png">
+    <style>
+        /* --- [ THEME & SETUP ] --- */
+        :root {
+            --primary-color: #FF7B54;
+            --secondary-color: #FFB26B;
+            --dark-color: #3D3D3D;
+            --light-color: #FFF8F0;
+            --white-color: #FFFFFF;
+            --text-light: #6c757d;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            --border-radius: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-color);
+            background-color: #FDFDFD; /* Slightly cleaner white */
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased; /* Smoother fonts */
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- [ REUSABLE COMPONENTS ] --- */
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 123, 84, 0.3);
+        }
+
+        /* --- [ ANIMATIONS ] --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up {
+            opacity: 0; /* Hidden by default for JS observer */
+        }
+        .fade-in-up.is-visible {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        /* --- [ NAVBAR ] --- */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 30px; background-color: var(--white-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000;
+        }
+        .logo-container { display: flex; align-items: center; text-decoration: none; z-index: 1001; }
+        .logo-icon { width: 40px; height: 40px; margin-right: 10px; }
+        .logo-name { font-size: 1.5rem; font-weight: 700; color: var(--dark-color); }
+        .nav-menu { display: flex; align-items: center; gap: 30px; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 8px; color: var(--dark-color);
+            text-decoration: none; font-weight: 500; position: relative; padding: 5px 0;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+            background-color: var(--primary-color); transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .profile-section { position: relative; }
+        .profile-avatar {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color);
+            color: var(--white-color); display: flex; align-items: center; justify-content: center;
+            font-weight: 600; cursor: pointer; user-select: none; transition: transform 0.2s ease;
+        }
+        .profile-avatar:hover { transform: scale(1.1); }
+        .profile-dropdown {
+            position: absolute; top: 55px; right: 0; background: var(--white-color); border-radius: var(--border-radius);
+            box-shadow: var(--shadow); width: 180px; z-index: 100; opacity: 0; transform: translateY(10px);
+            pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .profile-dropdown.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .profile-dropdown button {
+            display: block; width: 100%; text-align: left; padding: 12px 20px;
+            background: none; border: none; font-family: 'Poppins', sans-serif; font-size: 1rem;
+            cursor: pointer; transition: background-color 0.2s ease; color: var(--dark-color);
+        }
+        .profile-dropdown button:hover { background-color: #f9f9f9; }
+        #logout-btn { color: var(--red-color); }
+        .menu-toggle { display: none; cursor: pointer; z-index: 1001; }
+        .bar { display: block; width: 25px; height: 3px; margin: 5px auto; background-color: var(--dark-color); transition: all 0.3s ease-in-out; }
+        .menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+        .menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        /* --- [ MAIN CONTENT AREA ] --- */
+        .about-header {
+            text-align: center; padding: 100px 0; background: linear-gradient(135deg, var(--light-color), #ffffff);
+        }
+        .about-header h1 {
+            font-size: 3.5rem; color: var(--primary-color); margin-bottom: 15px; font-weight: 700;
+        }
+        .about-header p { font-size: 1.25rem; color: var(--text-light); max-width: 650px; margin: 0 auto; }
+
+        .content-section { padding: 80px 0; }
+        .content-section h2 {
+            font-size: 2.5rem; text-align: center; margin-bottom: 50px; font-weight: 600;
+        }
+        .content-section p { color: var(--text-light); margin-bottom: 20px; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .section-highlight { background-color: #f8f9fa; border-top: 1px solid #e9ecef; border-bottom: 1px solid #e9ecef; }
+
+        .how-to-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .step-card {
+            background: var(--white-color); padding: 30px; border-radius: var(--border-radius);
+            box-shadow: var(--shadow); text-align: center; border-bottom: 4px solid transparent;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .step-card:hover { transform: translateY(-10px); border-color: var(--primary-color); }
+        .step-icon {
+            font-size: 3rem; margin-bottom: 20px; display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white-color); width: 80px; height: 80px; border-radius: 50%;
+            line-height: 80px;
+        }
+        .step-card h3 { font-size: 1.3rem; margin-bottom: 10px; font-weight: 600; }
+        .step-card p { font-size: 0.95rem; color: var(--text-light); }
+        
+        /* [IMPROVEMENT] Interactive FAQ Accordion */
+        .faq-item {
+            background: var(--white-color); margin-bottom: 15px;
+            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: margin-bottom 0.3s ease;
+        }
+        .faq-question {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; cursor: pointer;
+        }
+        .faq-question h3 { font-size: 1.1rem; margin: 0; font-weight: 500; }
+        .faq-question .icon { font-size: 1.5rem; color: var(--primary-color); transition: transform 0.3s ease; }
+        .faq-answer {
+            max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.4s ease-out, opacity 0.4s ease-out, padding 0.4s ease-out;
+        }
+        .faq-answer p { margin: 0; padding: 0 20px 20px 20px; color: var(--text-light); }
+        .faq-item.active .faq-answer { max-height: 200px; opacity: 1; }
+        .faq-item.active .faq-question .icon { transform: rotate(180deg); }
+        .faq-item.active { margin-bottom: 25px; }
+
+        .contact-section { text-align: center; }
+
+        /* --- [ FOOTER ] --- */
+        .footer {
+            text-align: center; padding: 50px 0; margin-top: 60px;
+            background-color: var(--dark-color); color: rgba(255, 255, 255, 0.7);
+        }
+        .footer p { margin: 0; }
+
+        /* --- [ RESPONSIVENESS ] --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem !important; }
+            h2 { font-size: 2rem !important; }
+            .container { padding: 0 20px; }
+            .navbar { padding: 15px 20px; }
+            .menu-toggle { display: block; }
+            .nav-menu {
+                position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+                background: var(--white-color); flex-direction: column; justify-content: center;
+                align-items: center; opacity: 0; transform: translateY(-100%); pointer-events: none;
+                transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            }
+            .nav-menu.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+            .nav-links { flex-direction: column; gap: 25px; text-align: center; }
+            .nav-links a { font-size: 1.5rem; }
+            .profile-section { display: none; } /* Hide profile on mobile menu for simplicity, could be re-added if needed */
+            .about-header { padding: 60px 0; }
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+         <a href="index.html" class="logo-container">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.12,4H7.88A2.88,2.88,0,0,0,5,6.88V19.12A2.88,2.88,0,0,0,7.88,22H16.12A2.88,2.88,0,0,0,19,19.12V6.88A2.88,2.88,0,0,0,16.12,4ZM8,2H16a1,1,0,0,1,0,2H8A1,1,0,0,1,8,2Z" fill="#2c3e50"/><path d="M10.75 14.59L8.41 12.25a.75.75 0 0 1 1.06-1.06l1.28 1.28 3.22-3.22a.75.75 0 0 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0z" fill="#FF7B54"/></svg>
+            <span class="logo-name">TiffinTracker</span>
+        </a>
+        <div class="nav-menu" id="nav-menu">
+            <div class="nav-links">
+                <a href="/"> Home</a>
+                <a href="/login.html">login</a>
+            </div>
+                 <a href="/singup.html" class="btn">Get Setup</a>
+        </div>
+        <div class="profile-section">
+            <div class="profile-avatar" id="profile-avatar">S</div>
+            <div class="profile-dropdown" id="profile-dropdown">
+                <button id="logout-btn">Logout</button>
+            </div>
+        </div>
+        <div class="menu-toggle" id="menu-toggle">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="about-header fade-in-up">
+            <div class="container">
+                <h1>Simplicity in Every Bite</h1>
+                <p>Your simple, smart, and reliable solution for tracking daily tiffin meals. Never lose count or overpay again!</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container fade-in-up">
+                <h2>What is TiffinTracker?</h2>
+                <p>TiffinTracker was born from a simple problem: manually counting daily meals is a hassle. It's easy to forget, leading to confusion and disputes with your tiffin service provider at the end of the month. Our mission is to automate this process completely.</p>
+                <p>We provide a hassle-free system that sends you a quick notification at your meal times. With a single tap, your meal for that day is logged. Your monthly count and bill are updated in real-time on your personal dashboard, giving you complete clarity and peace of mind.</p>
+            </div>
+        </section>
+        
+        <section class="content-section section-highlight">
+            <div class="container fade-in-up">
+                <h2>How It Works</h2>
+                <div class="how-to-grid">
+                    <div class="step-card">
+                        <div class="step-icon">1</div>
+                        <h3>Sign Up & Verify</h3>
+                        <p>Create your account in seconds and verify your email. This ensures your account is secure and you receive all notifications.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-icon">2</div>
+                        <h3>Complete Your Setup</h3>
+                        <p>Tell us your tiffin service's name, the price per meal, and what times you receive your tiffins. This personalizes the tracker for you.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-icon">3</div>
+                        <h3>Respond & Relax</h3>
+                        <p>That's it! You'll get a simple "Yes/No" notification at your set meal times. Just respond, and we'll handle all the counting for you.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container fade-in-up">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is TiffinTracker free to use?</h3>
+                        <i class='bx bx-chevron-down icon'></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! TiffinTracker is completely free for personal use. Our goal is to provide a simple solution to a common problem.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What if I forget to respond to a notification?</h3>
+                        <i class='bx bx-chevron-down icon'></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No problem! Any missed notifications will appear in the "Pending Actions" section on your dashboard. You can go there anytime to mark whether you took the tiffin or not.</p>
+                    </div>
+                </div>
+                 <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Can I change my tiffin times or price later?</h3>
+                        <i class='bx bx-chevron-down icon'></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely. You can edit your mess name, price, and meal times at any point from your profile menu on the dashboard.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+         <section class="content-section contact-section">
+            <div class="container fade-in-up">
+                <h2>Have Questions or Feedback?</h2>
+                <p>We'd love to hear from you! If you have any suggestions or need help, please feel free to reach out.</p>
+                <a href="mailto:your-email@example.com" class="btn" style="margin-top:20px;">Contact Us</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 TiffinTracker. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- NAVBAR SCRIPT ---
+            const menuToggle = document.getElementById('menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const profileAvatar = document.getElementById('profile-avatar');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            const userName = localStorage.getItem('userName');
+
+            if (userName) {
+                profileAvatar.textContent = userName.charAt(0).toUpperCase();
+            } else {
+                const profileSection = document.querySelector('.profile-section');
+                if(profileSection) profileSection.style.display = 'none';
+            }
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                menuToggle.classList.toggle('active');
+            });
+            profileAvatar.addEventListener('click', (e) => {
+                if(window.innerWidth > 768) {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!profileAvatar.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.clear();
+                    window.location.href = '/login.html';
+                });
+            }
+
+            // --- [IMPROVEMENT] FAQ ACCORDION SCRIPT ---
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const item = question.parentElement;
+                    const answer = question.nextElementSibling;
+                    
+                    // Toggle active class on the clicked item
+                    item.classList.toggle('active');
+                });
+            });
+
+            // --- [IMPROVEMENT] SCROLL ANIMATION SCRIPT ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            const elementsToAnimate = document.querySelectorAll('.fade-in-up');
+            elementsToAnimate.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
