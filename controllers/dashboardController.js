@@ -2,8 +2,11 @@ const User = require('../models/User');
 
 // @desc    Save initial user settings
 // @route   POST /api/dashboard/settings
+// In controllers/dashboardController.js
+
 exports.saveSettings = async (req, res) => {
-    const { messName, pricePerTiffin, timesPerDay, notificationTimes } = req.body;
+    // Get the timezone from the request body as well
+    const { messName, pricePerTiffin, timesPerDay, notificationTimes, timezone } = req.body; // <-- 1. ADD 'timezone' HERE
 
     try {
         const user = await User.findById(req.user.id);
@@ -12,6 +15,7 @@ exports.saveSettings = async (req, res) => {
             user.settings.pricePerTiffin = pricePerTiffin;
             user.settings.timesPerDay = timesPerDay;
             user.settings.notificationTimes = notificationTimes;
+            user.settings.timezone = timezone; // <-- 2. ADD THIS LINE TO SAVE IT
             
             const updatedUser = await user.save();
             res.json(updatedUser.settings);
@@ -160,46 +164,47 @@ exports.updateFromNotification = async (req, res) => {
     }
 };
 
-// controllers/dashboardController.js
+// In controllers/dashboardController.js
 
-// ... (keep all your existing functions like getDashboardData, etc.)
-
-// @desc    Update user settings
-// @route   PUT /api/dashboard/settings
-// This is the complete, correct function. Just copy and paste it.
+// DELETE your old updateSettings function and REPLACE it with this one.
 
 exports.updateSettings = async (req, res) => {
+    // This is a robust way to handle both initial setup and future updates.
     try {
+        // Find the user by the ID that the 'auth' middleware provides
         const user = await User.findById(req.user.id);
 
-        if (user) {
-            // Only update the fields that are sent in the request
-            if (req.body.messName) user.settings.messName = req.body.messName;
-            if (req.body.pricePerTiffin) user.settings.pricePerTiffin = req.body.pricePerTiffin;
-            
-            // This logic is slightly different from your setup form, but let's handle both
-            if (req.body.notificationTimes) {
-                user.settings.notificationTimes = req.body.notificationTimes;
-                // If timesPerDay is sent from the setup form, use it. Otherwise, calculate it.
-                user.settings.timesPerDay = req.body.timesPerDay || req.body.notificationTimes.length;
-            }
-
-            // --- THIS IS THE FIX ---
-            // Add this line to save the timezone if it's sent
-            if (req.body.timezone) user.settings.timezone = req.body.timezone;
-            // ---------------------
-            
-            const updatedUser = await user.save();
-            res.json(updatedUser.settings);
-        } else {
-            res.status(404).json({ message: 'User not found' });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
+
+        // THE BULLETPROOF FIX:
+        // 1. Take the user's existing settings (or an empty object if none exist).
+        // 2. Take all the new data from the request body (messName, price, times, timezone).
+        // 3. Merge them together. The new data will overwrite the old if there's an overlap.
+        const newSettings = {
+            ...user.settings,
+            ...req.body
+        };
+
+        // If 'notificationTimes' was part of the update, also update 'timesPerDay'
+        if (req.body.notificationTimes) {
+            newSettings.timesPerDay = req.body.notificationTimes.length;
+        }
+
+        // Assign the newly merged settings object back to the user
+        user.settings = newSettings;
+
+        // Save the user with the complete, updated settings
+        await user.save();
+
+        res.json(user.settings);
+
     } catch (error) {
-        console.error('Error updating settings:', error);
+        console.error('Error in updateSettings controller:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
-
 // @desc    Delete user account
 // @route   DELETE /api/dashboard/delete-account
 exports.deleteAccount = async (req, res) => {
